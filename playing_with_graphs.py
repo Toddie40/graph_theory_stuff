@@ -3,13 +3,17 @@ from matplotlib import pyplot as plt
 from tqdm import tqdm
 
 class Node:
-
+    """
+    Just an x,y point of euclidian space really but there you go... It's basically a NamedTuple but don't tell him....he's sensitive about it
+    """
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
 class Route:
-
+    """
+    Routes hold information about their overall cost along their length as well as have a start and end node. 
+    """
     def __init__(self, end_node: int, path: list, dist: float, heuristic: float):
         self.node = end_node
         self.path = path
@@ -24,7 +28,10 @@ class Route:
         """
 
 class RouteList:
-
+    """
+    Route list to hold routes. Has the key function of being able to pop out the shortest route from the list
+    It's not ordered like a queue so it might be inefficient, but it's good enough for now.
+    """
     def __init__(self):
         self.routes = []
 
@@ -47,7 +54,9 @@ class RouteList:
 
 
 class Graph:
-
+    """
+    Definition of a graph. 
+    """
     def __init__(self):
         self.nodes = []
         self.edges = np.empty((0,0))
@@ -75,9 +84,18 @@ class Graph:
         return dist
     
     def get_shortest_path(self, start: int, end: int, max_iters=1000):
-        # TODO this breaks if the end node is not connected to the start node 
-        # we should be able to gracefully catch the exception and pass an output that states that the end node is unreachable from the start node
-        # implement A* search algorithm
+        """A wonderful little A* search implementation in python. I'm sure it's brilliant in every way and not remotely inefficient.....
+        Gets a short path between a start and end node in a graph
+
+        Args:
+            start:      <int> index of start node in graph nodes list
+            end:        <int> index of end node in graph nodes list
+            max_iters:  <int> Maximum number of iterations to loop over the graph during the searching (default=1000)
+
+        Returns:
+            success:        <bool> True if successfully found a path from start to end through graph. False if max iters exceeded or no path exists
+            shortest route: <Route> If success is True then the shortest route from start to end, otherwise the furthest the algorithm got.
+        """
         current_heuristic = self.get_euclidian_dist(start, end)
         current_route = Route(start, [start], dist=0, heuristic=current_heuristic)
         routes = RouteList()
@@ -141,6 +159,15 @@ class Graph:
 
 
 def random_graph(size):
+    """
+    Naff little function to generate a random graph with <size> nodes
+
+    Args: 
+        size: <int> number of nodes in generated graph
+    
+    Returns:
+        <Graph> A graph with <size> randomly located nodes randomly connected with random weights
+    """
     my_graph = Graph()
         
     # generate some nodes
@@ -170,7 +197,11 @@ def test_random_graph():
 
 
 if __name__ == '__main__':
-
+    """
+    Interesting little test to see what proportion of randomly generated graphs are able to connect from the start to end node
+    Just a curiosity....
+    Turns out it's roughly 2/3rds to 7/10ths of randomly connected graphs have a route from node 0 to the last node.
+    """
     successes = 0
     failures = 0
 
